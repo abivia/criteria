@@ -8,6 +8,10 @@ class Criteria
      * @var callable
      */
     private $accessor;
+    /**
+     * @var array
+     */
+    protected array $operatorEnabled;
     private static array $operators = [
         '==' => 'binary', '!=' => 'binary', '===' => 'binary', '!==' => 'binary',
         '>' => 'binary', '>=' => 'binary', '<' => 'binary', '<=' => 'binary',
@@ -28,36 +32,64 @@ class Criteria
 
     /**
      * Create a Criteria object, optionally overriding properties.
-     * @param array $overrides
+     * @param array $options
      * @throws LogicException
      */
-    public function __construct(array $overrides = [])
+    public function __construct(array $options = [])
     {
-        if (count($overrides)) {
-            foreach ($overrides as $name => $value) {
-                if (!isset($this->props[$name])) {
-                    unset($overrides[$name]);
-                    continue;
-                }
-                if (!is_scalar($value) || (string) $value === '') {
-                    throw new LogicException(
-                        "Error: invalid property name for \"$name\"."
-                    );
-                }
-            }
-            $props = array_merge($this->props, $overrides);
-            $duplicate = [];
-            foreach ($props as $propName => $newName) {
-                if (isset($duplicate[$newName])) {
-                    throw new LogicException(
-                        "Error: duplicate property name. \"$newName\" used for both"
-                        . " \"$duplicate[$newName]\" and \"$newName\"."
-                    );
-                }
-                $duplicate[$newName] = $propName;
-            }
-            $this->props = $props;
+        if (count($options['overrides'] ?? [])) {
+            $this->props = $this->cleanOption(
+                'overrides', $options['overrides'], $this->props
+            );
         }
+        $this->operatorEnabled = array_fill_keys(array_keys(self::$operators), true);
+        foreach ($options['operatorState'] ?? [] as $operator => $value) {
+            if (isset($this->operatorEnabled[$operator])) {
+                $this->operatorEnabled[$operator] = (bool) $value;
+            }
+        }
+    }
+
+    /**
+     * @param string $label
+     * @param array $updates
+     * @param array $reference
+     * @param bool $nullable
+     * @return array
+     * @throws LogicException
+     */
+    private function cleanOption(
+        string $label,
+        array $updates,
+        array $reference,
+        bool $nullable = false
+    ): array {
+        foreach ($updates as $name => $value) {
+            if (!isset($reference[$name])) {
+                unset($updates[$name]);
+                continue;
+            }
+            if ($nullable && $value === null) {
+                continue;
+            }
+            if (!is_scalar($value) || (string) $value === '') {
+                throw new LogicException(
+                    "Error: invalid $label name for \"$name\"."
+                );
+            }
+        }
+        $cleaned = array_merge($reference, $updates);
+        $duplicate = [];
+        foreach ($cleaned as $propName => $newName) {
+            if (isset($duplicate[$newName])) {
+                throw new LogicException(
+                    "Error: duplicate label name. \"$newName\" used for both"
+                    . " \"$duplicate[$newName]\" and \"$newName\"."
+                );
+            }
+            $duplicate[$newName] = $propName;
+        }
+        return $cleaned;
     }
 
     /**
@@ -151,7 +183,7 @@ class Criteria
         }
         $argument = ($this->accessor)($criterion[$this->props['arg']]);
         $operator = strtolower($criterion[$this->props['op']] ?? '[none]');
-        if (!isset(self::$operators[$operator])) {
+        if (!isset(self::$operators[$operator]) || !$this->operatorEnabled[$operator]) {
             $this->exception("Unrecognized operator \"$operator\".");
         }
         $mode = self::$operators[$operator];

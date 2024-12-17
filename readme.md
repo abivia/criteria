@@ -82,6 +82,18 @@ or if `acessor('firstName')` is an empty string.
 Will evaluate true if `acessor('province')` is "ON" 
 and `accessor('areaCode')` matches one of the values in the list.
 
+## Operator Access Control
+
+If your application is processing user-generated data nad you want to
+restrict access to some operators, this is possible with the 
+`operatorState` option.
+
+```php
+$criteria = new \Abivia\Criteria\Criteria(
+   ['operatorState' => ['regex' => false, '!regex' => false]]
+);
+```
+
 ## Property Configuration
 
 Property names used in the criteria can be changed at instantiation
@@ -89,7 +101,9 @@ by passing an array of replacements.
 Only the passed in properties will be modified.
 
 ```php
-$criteria = new \Abivia\Criteria\Criteria(['arg' => 'left', 'op' => 'operator', 'value' => 'right']);
+$criteria = new \Abivia\Criteria\Criteria(
+   ['overrides' => ['arg' => 'left', 'op' => 'operator', 'value' => 'right']]
+);
 ```
 
 Would change a valid input to:

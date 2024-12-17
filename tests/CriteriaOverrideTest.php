@@ -11,14 +11,16 @@ class CriteriaOverrideTest extends TestCase
     public function setUp(): void
     {
         $this->testObj = new Criteria([
-            'and'=> 'also',
-            'bogus' => 'foo',
-            'arg' => 'left',
-            'name' => 'comment',
-            'op' => 'with',
-            'value' => 'right',
-            'var' => 'from',
-            'xor' => 'except'
+            'overrides' => [
+                'and' => 'also',
+                'bogus' => 'foo',
+                'arg' => 'left',
+                'name' => 'comment',
+                'op' => 'with',
+                'value' => 'right',
+                'var' => 'from',
+                'xor' => 'except',
+            ]
         ]);
     }
 
@@ -56,23 +58,27 @@ class CriteriaOverrideTest extends TestCase
 
     public function testBadOverrideBlank(): void
     {
+        $clean = true;
         try {
             new Criteria([
-                'name' => '',
+                'overrides' => ['name' => ''],
             ]);
         } catch (LogicException $ex) {
+            $clean = false;
             $message = $ex->getMessage();
             $this->assertStringStartsWith('Error:', $message);
         }
-
+        $this->assertFalse($clean);
     }
 
     public function testBadOverrideDuplicate(): void
     {
         try {
             new Criteria([
-                'arg' => 'left',
-                'value' => 'left',  // oops!
+                'overrides' => [
+                    'arg' => 'left',
+                    'value' => 'left',  // oops!
+                ]
             ]);
         } catch (LogicException $ex) {
             $message = $ex->getMessage();
@@ -85,7 +91,7 @@ class CriteriaOverrideTest extends TestCase
     {
         try {
             new Criteria([
-                'arg' => null,
+                'overrides' => ['arg' => null],
             ]);
         } catch (LogicException $ex) {
             $message = $ex->getMessage();

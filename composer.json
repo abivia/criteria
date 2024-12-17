@@ -1,0 +1,24 @@
+{
+  "name": "abivia/criteria",
+  "description": "A simple logical expression processor",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "jal",
+      "email": "email@example.com"
+    }
+  ],
+  "version": "1.0.0",
+  "require": {
+    "php": "^8.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Abivia\\Criteria\\": "src/abivia/criteria/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.5"
+  }
+}

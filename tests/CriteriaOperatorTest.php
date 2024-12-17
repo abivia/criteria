@@ -26,6 +26,20 @@ class CriteriaOperatorTest extends TestCase
         }));
     }
 
+    public function testEqualsDefaultOperator(): void
+    {
+        $criteria = json_decode(
+            '[{"arg":"prop","value":"4"}]',
+            true
+        );
+        $this->assertTrue($this->testObj->evaluate($criteria, function (string $arg) {
+            return '4';
+        }));
+        $this->assertFalse($this->testObj->evaluate($criteria, function (string $arg) {
+            return '2';
+        }));
+    }
+
     public function testEqualsArrayValue(): void
     {
         $criteria = json_decode(

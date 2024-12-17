@@ -182,7 +182,7 @@ class Criteria
             $this->exception("Property {$this->props['arg']} missing from criterion.");
         }
         $argument = ($this->accessor)($criterion[$this->props['arg']]);
-        $operator = strtolower($criterion[$this->props['op']] ?? '[none]');
+        $operator = strtolower($criterion[$this->props['op']] ?? '==');
         if (!isset(self::$operators[$operator]) || !$this->operatorEnabled[$operator]) {
             $this->exception("Unrecognized operator \"$operator\".");
         }

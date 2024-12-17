@@ -10,7 +10,8 @@ This is an implicit "or" operation.
 A term is an array with these elements:
 * `arg` - the name of a value to be retrieved via the accessor callback.
 * `op` - A comparison operator, one of ==, ===, !=, !==, >, >=, <, <=, null, !null, regex, !regex,
-in, !in
+in, !in.
+If no operator is specified, then == is used.
 * `value` or `var` - Required for binary operators (i.e. those other than null, !null), the value
 to be compared or the regular expression to be matched. The `value` can be an array.
 If an array value is provided for a binary operator, each value is compared 

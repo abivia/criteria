@@ -85,7 +85,7 @@ and `accessor('areaCode')` matches one of the values in the list.
 
 ## Operator Access Control
 
-If your application is processing user-generated data nad you want to
+If your application is processing user-generated data and you want to
 restrict access to some operators, this is possible with the 
 `operatorState` option.
 
@@ -94,6 +94,7 @@ $criteria = new \Abivia\Criteria\Criteria(
    ['operatorState' => ['regex' => false, '!regex' => false]]
 );
 ```
+This will disable use of the regular expression operators.
 
 ## Property Configuration
 

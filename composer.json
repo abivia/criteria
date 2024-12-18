@@ -1,12 +1,16 @@
 {
   "name": "abivia/criteria",
-  "description": "A simple logical expression processor",
+  "description": "A simple logical expression processor with regex capability.",
+  "keywords": ["expression", "regex", "logic"],
   "minimum-stability": "stable",
   "license": "MIT",
+  "readme": "readme.md",
   "authors": [
     {
-      "name": "jal",
-      "email": "email@example.com"
+      "name": "Alan Langford",
+      "email": "foss@abivia.com",
+      "homepage": "https://foss.abivia.com",
+      "role": "Developer"
     }
   ],
   "version": "1.1.1",

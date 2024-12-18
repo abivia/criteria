@@ -40,12 +40,12 @@ Will evaluate true if the value of `acessor('language')` is "en".
 [
   {
     "arg": "firstName",
-    "op": "==",
     "var": "lastName"
   }
 ]
 ```
-Will evaluate true if  `acessor('firstName')` is equal to `acessor('lastName')`.
+This assumes the operator is == and Will evaluate true
+if  `acessor('firstName')` is equal to `acessor('lastName')`.
 
 ```json
 [

@@ -84,7 +84,6 @@ class CriteriaOverrideTest extends TestCase
             $message = $ex->getMessage();
             $this->assertStringStartsWith('Error:', $message);
         }
-
     }
 
     public function testBadOverrideInvalid(): void
@@ -98,6 +97,30 @@ class CriteriaOverrideTest extends TestCase
             $this->assertStringStartsWith('Error:', $message);
         }
 
+    }
+
+    public function testDisabledOperator()
+    {
+        try {
+            $testObj =new Criteria([
+                'operatorState' => [
+                    '==' => false,
+                ]
+            ]);
+            $criteria = json_decode(
+                '[{"name":"broken","arg":"prop","op":"==","value":"4"}]',
+                true
+            );
+            $testObj->evaluate($criteria, function (string $arg) {
+                return '4';
+            });
+        } catch (LogicException $ex) {
+            $message = $ex->getMessage();
+            $this->assertStringContainsString(
+                'Unrecognized operator',
+                $message
+            );
+        }
     }
 
     public function testNamedCriterion(): void

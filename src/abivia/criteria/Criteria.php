@@ -9,14 +9,24 @@ class Criteria
      */
     private $accessor;
     /**
+     * @var array|string[] Operators that need to be inverted when applied to an array.
+     */
+    private static array $inversions = [
+        '!=' => '==',
+        '!==' => '===',
+        '!contains' => 'contains',
+        '!regex' => 'regex',
+    ];
+    /**
      * @var array
      */
     protected array $operatorEnabled;
     private static array $operators = [
         '==' => 'binary', '!=' => 'binary', '===' => 'binary', '!==' => 'binary',
         '>' => 'binary', '>=' => 'binary', '<' => 'binary', '<=' => 'binary',
+        'contains' => 'binary', '!contains'  => 'binary',
+        'in' => 'array', '!in' => 'array', 'includes' => 'array',  '!includes' => 'array',
         'null' => 'unary', '!null' => 'unary', 'regex' => 'binary', '!regex' => 'binary',
-        'in' => 'array', '!in' => 'array',
     ];
     private array $props = [
         'and' => 'and',
@@ -111,6 +121,8 @@ class Criteria
             '>=' => $argument >= $value,
             '<' => $argument < $value,
             '<=' => $argument <= $value,
+            'contains' => str_contains($argument, $value),
+            '!contains' => !str_contains($argument, $value),
             'null' => $argument === null,
             '!null' => $argument !== null,
             'regex' => preg_match($value, $argument),
@@ -127,10 +139,34 @@ class Criteria
      */
     private function compareArray($argument, string $operator, array $values): bool
     {
-        return match ($operator) {
-            'in' => in_array($argument, $values),
-            '!in' => !in_array($argument, $values),
-        };
+        if ($invert = str_starts_with($operator, '!')) {
+            $operator = substr($operator, 1);
+        }
+        $valueHasOneElement = count($values) === 1;
+        if (is_array($argument)) {
+            if ($valueHasOneElement) {
+                $result = match ($operator) {
+                    'in' => false,
+                    'includes' => in_array($values[0], $argument),
+                };
+            } else {
+                $result = match ($operator) {
+                    'in' => count(array_intersect($argument, $values)) === count($argument),
+                    'includes' => count(array_intersect($argument, $values)) === count($values),
+                };
+            }
+        } else {
+            // The argument is a scalar
+            if ($valueHasOneElement) {
+                $result = in_array($argument, $values);
+            } else {
+                $result = match ($operator) {
+                    'in' => in_array($argument, $values),
+                    'includes' => false,
+                };
+            }
+        }
+        return $invert ? !$result : $result;
     }
 
     /**
@@ -212,6 +248,15 @@ class Criteria
             $values = is_array($values) ? $values : [$values];
             if ($mode === 'array') {
                 $result = $this->compareArray($argument, $operator, $values);
+            } elseif ($inverseOp =(self::$inversions[$operator] ?? false)) {
+                // Array elements are joined by an implicit or, so apply DeMorgan's Theorem
+                $result = true;
+                foreach ($values as $value) {
+                    if ($this->compare($argument, $inverseOp, $value)) {
+                        $result = false;
+                        break;
+                    }
+                }
             } else {
                 $result = false;
                 foreach ($values as $value) {

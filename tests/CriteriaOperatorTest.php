@@ -194,6 +194,62 @@ class CriteriaOperatorTest extends TestCase
         }));
     }
 
+    public function testHasArrayArray()
+    {
+        $criteria = json_decode(
+            '[{"arg":"prop","op":"has","value":["0", "1"]}]',
+            true
+        );
+        $this->assertTrue($this->testObj->evaluate($criteria, function (string $arg) {
+            return ['0'];
+        }));
+        $this->assertFalse($this->testObj->evaluate($criteria, function (string $arg) {
+            return ['2'];
+        }));
+    }
+
+    public function testHasArrayScalar()
+    {
+        $criteria = json_decode(
+            '[{"arg":"prop","op":"has","value":"0"}]',
+            true
+        );
+        $this->assertTrue($this->testObj->evaluate($criteria, function (string $arg) {
+            return ['0'];
+        }));
+        $this->assertFalse($this->testObj->evaluate($criteria, function (string $arg) {
+            return ['2'];
+        }));
+    }
+
+    public function testHasScalarArray()
+    {
+        $criteria = json_decode(
+            '[{"arg":"prop","op":"has","value":["0","3"]}]',
+            true
+        );
+        $this->assertTrue($this->testObj->evaluate($criteria, function (string $arg) {
+            return '0';
+        }));
+        $this->assertFalse($this->testObj->evaluate($criteria, function (string $arg) {
+            return '2';
+        }));
+    }
+
+    public function testHasScalarScalar()
+    {
+        $criteria = json_decode(
+            '[{"arg":"prop","op":"has","value":"0"}]',
+            true
+        );
+        $this->assertTrue($this->testObj->evaluate($criteria, function (string $arg) {
+            return '0';
+        }));
+        $this->assertFalse($this->testObj->evaluate($criteria, function (string $arg) {
+            return '2';
+        }));
+    }
+
     public function testInArrayInArray(): void
     {
         $criteria = json_decode(

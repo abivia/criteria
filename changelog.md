@@ -1,5 +1,10 @@
 # Change Log
 
+### 1.3.0
+
+Added:
+* The "has" operator (set intersection).
+
 ### 1.2.0
 
 Added:

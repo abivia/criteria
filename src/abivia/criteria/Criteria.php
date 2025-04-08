@@ -25,7 +25,9 @@ class Criteria
         '==' => 'binary', '!=' => 'binary', '===' => 'binary', '!==' => 'binary',
         '>' => 'binary', '>=' => 'binary', '<' => 'binary', '<=' => 'binary',
         'contains' => 'binary', '!contains'  => 'binary',
-        'in' => 'array', '!in' => 'array', 'includes' => 'array',  '!includes' => 'array',
+        'has' => 'array', '!has' => 'array',
+        'in' => 'array', '!in' => 'array',
+        'includes' => 'array',  '!includes' => 'array',
         'null' => 'unary', '!null' => 'unary', 'regex' => 'binary', '!regex' => 'binary',
     ];
     private array $props = [
@@ -147,10 +149,11 @@ class Criteria
             if ($valueHasOneElement) {
                 $result = match ($operator) {
                     'in' => false,
-                    'includes' => in_array($values[0], $argument),
+                    'has','includes' => in_array($values[0], $argument),
                 };
             } else {
                 $result = match ($operator) {
+                    'has' => count(array_intersect($argument, $values)) !== 0,
                     'in' => count(array_intersect($argument, $values)) === count($argument),
                     'includes' => count(array_intersect($argument, $values)) === count($values),
                 };
@@ -161,7 +164,7 @@ class Criteria
                 $result = in_array($argument, $values);
             } else {
                 $result = match ($operator) {
-                    'in' => in_array($argument, $values),
+                    'has','in' => in_array($argument, $values),
                     'includes' => false,
                 };
             }

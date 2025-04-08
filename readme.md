@@ -32,12 +32,15 @@ Element names are configurable to suit the application. See "property configurat
 ## Operators
 
 The operator is one of ==, ===, !=, !==, >, >=, <, <=,
-contains, !contains, in, !in, includes, !includes,
+contains, !contains, has, !has, in, !in, includes, !includes,
 null, !null, regex, !regex.
 If no operator is specified, then == is assumed.
 
 * The "contains" operator is true if `var`/`value` is a substring of `arg`.
   This test is case-sensitive.
+* The "has" operator performs an intersection operation.
+  Both `arg` and `var`/`value` are treated as arrays.
+  If one element in `arg` can be found in the `var`/`value` the result is true.
 * The "in" operator is true if `arg` can be found in `var`/`value`,
   which normally is an array.
   If both `arg` and `var`/`value` are scalar, "in" is equivalent to ==.
